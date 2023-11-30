@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { createTheme, ThemeProvider, CssBaseline, Container, Typography, Button, Icon } from '@mui/material';
 import { saveAs } from 'file-saver';
+import jsPDF from 'jspdf';
+
 
 import AppBarComponent from './AppBar';
 import DrawerComponent from './Drawer';
@@ -107,12 +109,14 @@ const Dashboard = () => {
       ],
     };
   };
+  const chartRefs = useRef(Array.from({ length: initialCharts.length }).map(() => createRef()));
   const handleExport = () => {
-    const chartsContainer = chartsContainerRef.current;
-
+    const chartCards = chartRefs.current.map((ref) => ref.current);
     if (chartsContainer) {
+      // Get all chart cards within the container
       const chartCards = chartsContainer.querySelectorAll('.chart-card');
-
+  
+      // Create an array of promises, each resolving to a blob URL of a chart card
       const promises = Array.from(chartCards).map((chartCard) => {
         return new Promise((resolve) => {
           html2pdf(chartCard, {
@@ -126,21 +130,22 @@ const Dashboard = () => {
           });
         });
       });
-
+  
+      // Once all promises are resolved, create a merged PDF
       Promise.all(promises).then((blobUrls) => {
-        // Create a PDF with all charts
         const mergedPdf = new jsPDF();
-
+  
         blobUrls.forEach((blobUrl, index) => {
           if (index > 0) {
             mergedPdf.addPage();
           }
+  
+          // Add the chart image to the PDF
           mergedPdf.addImage(blobUrl, 'JPEG', 0, 0);
         });
-
-        // Save the merged PDF file
-        const blob = mergedPdf.output('blob');
-        saveAs(blob, 'charts_export.pdf');
+  
+        // Download the merged PDF
+        mergedPdf.save('charts_export.pdf');
       });
     }
   };
@@ -245,7 +250,7 @@ const Dashboard = () => {
             }}
           >
             <Typography variant="h5" style={{ flex: 1, padding: '50px' }}>
-              Welcome to Dashboard {userDetails.username}!
+              Welcome to Dashboards {userDetails.username}!
             </Typography>
             <div
               style={{
@@ -261,15 +266,9 @@ const Dashboard = () => {
                 <Typography variant="body1">Lorem Ipsum </Typography>
               </div>
               <div style={{ display: 'flex', padding: '20px'}}>
-                    <input
-                      accept="application/pdf"
-                      style={{ display: 'none' }}
-                      id="file-input"
-                      type="file"
-                    />
                     <label htmlFor="file-input">
                       <Button variant="contained" component="span" onClick={handleExport}>
-                        Export All Charts
+                        Export Charts
                       </Button>
                     </label>
               </div>
@@ -301,6 +300,7 @@ const Dashboard = () => {
                 justifyContent: 'space-between',
                 marginTop: '20px',
                 alignContent: 'center',
+
               }}
             >
               <div
@@ -308,6 +308,7 @@ const Dashboard = () => {
                   flex: 1,
                   display: 'flex',
                   justifyContent: 'space-between',
+                  alignContent: 'center',
                   overflow: 'hidden',
                 }}
               >
@@ -367,6 +368,18 @@ const Dashboard = () => {
               }}
             >
               {/* Static Chart Cards */}
+               <div
+              id="charts-container"
+              style={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-around',
+                alignItems: 'flex-start',
+                flexWrap: 'wrap',
+                overflowY: 'auto',
+              }}
+            >
+              {/* Static Chart Cards */}
               <div
                 style={{
                   flex: '1 1 300px',
@@ -375,12 +388,14 @@ const Dashboard = () => {
                   overflow: 'hidden',
                 }}
               >
-                <ChartCard classname = 'chart-card'
+                <ChartCard
+                  classname="chart-card"
                   chartType="bar"
                   chartData={chartData}
                   chartOptions={chartOptions}
                   dropdownCount={3}
                   dropdownOptions={dropdownOptions[2]}
+                  chartRef={chartRefs.current[0]}
                 />
               </div>
               <div
@@ -391,12 +406,14 @@ const Dashboard = () => {
                   overflow: 'hidden',
                 }}
               >
-                <ChartCard classname = 'chart-card'
+                <ChartCard
+                  classname="chart-card"
                   chartType="line"
                   chartData={chartData}
                   chartOptions={chartOptions}
                   dropdownCount={2}
                   dropdownOptions={dropdownOptions[2]}
+                  chartRef={chartRefs.current[1]}
                 />
               </div>
               <div
@@ -407,12 +424,14 @@ const Dashboard = () => {
                   overflow: 'hidden',
                 }}
               >
-                <ChartCard classname = 'chart-card'
+                <ChartCard
+                  classname="chart-card"
                   chartType="doughnut"
                   chartData={chartData}
                   chartOptions={chartOptions}
                   dropdownCount={2}
                   dropdownOptions={dropdownOptions[2]}
+                  chartRef={chartRefs.current[2]}
                 />
               </div>
 
@@ -428,13 +447,14 @@ const Dashboard = () => {
                   }}
                 >
                   <ChartCard
-                    classname = 'chart-card'
+                    classname="chart-card"
                     chartType={chartData.chartType}
                     chartData={chartData}
                     chartOptions={chartOptions}
                     dropdownCount={3}
                     dropdownOptions={dropdownOptions[2]}
-                  />            
+                    chartRef={chartRefs.current[index + 3]}
+                  />
                 </div>
               ))}
             </div>

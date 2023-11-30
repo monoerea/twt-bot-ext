@@ -1,17 +1,21 @@
-// ChartCard.js
-import React, { useEffect, useState } from 'react';
+// Import necessary dependencies
+import React, { useEffect, useState, useRef } from 'react';
 import { useTheme } from '@mui/material/styles';
 import { Card, CardContent, CardActions, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
 import { Doughnut, Bar, Line, Radar } from 'react-chartjs-2';
 
-const OPTIONS_URL = 'your_server_endpoint'; // Replace with your actual server endpoint
+// Define OPTIONS_URL (replace with actual endpoint)
+const OPTIONS_URL = 'your_server_endpoint';
 
 const ChartCard = ({ chartType, chartData, chartOptions, dropdownCount, dropOptions }) => {
   const theme = useTheme();
   const [isLoading, setIsLoading] = useState(true);
   const [options, setOptions] = useState([]);
-  const [dropdownOptions, setDropdownOptions] = useState(Array.from({ length: dropdownCount }, () => [])); // Initialize dropdownOptions as an array of arrays
+  const [dropdownOptions, setDropdownOptions] = useState(Array.from({ length: dropdownCount }, () => []));
   const [chartOptionsArray, setChartOptionsArray] = useState(Array(dropdownCount).fill(''));
+
+  // Ref to hold chart component references
+  const chartRefs = useRef(Array(dropdownCount).fill(null));
 
   const handleOptionsChange = (event, index) => {
     const updatedChartOptionsArray = [...chartOptionsArray];
@@ -25,30 +29,30 @@ const ChartCard = ({ chartType, chartData, chartOptions, dropdownCount, dropOpti
     // Add more options as needed
   ];
 
-  const fetchOptions = async (index) => { // Pass index as a parameter
+  const fetchOptions = async (index) => {
     try {
       // Simulate a fetch from the server
       // const response = await fetch(OPTIONS_URL);
       // const data = await response.json();
-  
+
       // Simulated response
       const data = { options: alt_options };
-  
+
       // Update the options state
       setChartOptionsArray(Array(dropdownCount).fill(''));
       setDropdownOptions((prevOptions) => {
         const updatedOptions = [...prevOptions];
-        updatedOptions[index] = data.options; // Assuming you have the index to update
+        updatedOptions[index] = data.options;
         return updatedOptions;
       });
       setIsLoading(false);
     } catch (error) {
       console.error('Error fetching options:', error);
       setDropdownOptions((prevOptions) => [
-      ...prevOptions,
-      Array(dropdownCount).fill(alt_options),
-    ]);
-    setIsLoading(false);
+        ...prevOptions,
+        Array(dropdownCount).fill(alt_options),
+      ]);
+      setIsLoading(false);
     }
   };
 
@@ -58,18 +62,17 @@ const ChartCard = ({ chartType, chartData, chartOptions, dropdownCount, dropOpti
       fetchOptions(index);
     });
   }, []); // Run this effect only once when the component mounts
-  
-  const renderChart = () => {
+
+  const renderChart = (index) => {
     switch (chartType) {
       case 'doughnut':
-        return <Doughnut data={chartData} options={chartOptions} />;
+        return <Doughnut ref={(ref) => (chartRefs.current[index] = ref)} data={chartData} options={chartOptions} />;
       case 'bar':
-        return <Bar data={chartData} options={chartOptions} />;
+        return <Bar ref={(ref) => (chartRefs.current[index] = ref)} data={chartData} options={chartOptions} />;
       case 'line':
-        return <Line data={chartData} options={chartOptions} />;
+        return <Line ref={(ref) => (chartRefs.current[index] = ref)} data={chartData} options={chartOptions} />;
       case 'radar':
-        return <Radar data={chartData} options={chartOptions} />;
-      // Add more cases for other chart types if needed
+        return <Radar ref={(ref) => (chartRefs.current[index] = ref)} data={chartData} options={chartOptions} />;
       default:
         return null;
     }
@@ -78,9 +81,9 @@ const ChartCard = ({ chartType, chartData, chartOptions, dropdownCount, dropOpti
   return (
     <Card style={{ borderRadius: '10px', width: '100%', backgroundColor: theme.palette.background.default }}>
       <CardContent>
-        {renderChart()}
+        {!isLoading && Array.from({ length: dropdownCount }).map((_, index) => renderChart(index))}
       </CardContent>
-      <CardActions style={{ display: 'flex', justifyContent: 'center', overflow: 'auto'}}>
+      <CardActions style={{ display: 'flex', justifyContent: 'center', overflow: 'auto' }}>
         {!isLoading &&
           Array.from({ length: dropdownCount }).map((_, index) => (
             <FormControl key={index} style={{ minWidth: 120, marginRight: 10 }}>
