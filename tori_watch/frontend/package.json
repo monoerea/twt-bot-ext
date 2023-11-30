@@ -28,6 +28,8 @@
     "@mui/icons-material": "^5.14.16",
     "@mui/material": "^5.14.18",
     "chart.js": "^4.4.0",
+    "file-saver": "^2.0.5",
+    "html2pdf.js": "^0.10.1",
     "react-chartjs-2": "^5.2.0",
     "react-router-dom": "^6.18.0"
   }

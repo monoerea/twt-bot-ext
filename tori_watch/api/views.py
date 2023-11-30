@@ -42,6 +42,8 @@ class CreateUserView(generics.CreateAPIView):
         serializer = self.serializer_class(data=request.data)
         
         if serializer.is_valid():
+            uid = serializer.data.get('uid')
+            session_id = serializer.data.get('session_id')
             username = serializer.data.get('username')
             password = serializer.data.get('password')
             email = serializer.data.get('email')
@@ -51,14 +53,24 @@ class CreateUserView(generics.CreateAPIView):
 
             if queryset.exists():
                 user = queryset[0]
+                user.uid = uid
+                user.session_id = session_id
                 user.username = username
                 user.password = password
                 user.email = email
                 user.save(update_fields=['username', 'password', 'email'])
             else:
-                user = User(session_id=session_id, username=username, password=password, email=email)
+                user = User(username=username, password=password, email=email)
                 user.save()
 
             return Response(UserSerializer(user).data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class GetUserByUID(APIView):
+    def get(self, request, uid):
+        try:
+            user = User.objects.get(uid=uid)
+            serializer = UserSerializer(user)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)       

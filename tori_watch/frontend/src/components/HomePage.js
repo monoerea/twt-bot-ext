@@ -17,7 +17,7 @@ export default class HomePage extends Component {
           <Route path="/" element={ <p>HELL</p>} />
           <Route path="sign_in" element={<SignInPage />} />
           <Route path="sign_up" element={<SignUpPage />} />
-          <Route path="dashboard" element={<Dashboard />}/>
+          <Route path="dashboard/:uid" element={<Dashboard />}/>
         </Routes>
       </Router>
     );
