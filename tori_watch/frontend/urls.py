@@ -23,4 +23,5 @@ urlpatterns = [
     path('sign_up', index),
     path('dashboard/<str:uid>', index),
     path('sign_in/1', index),
+    path('test', index)
 ]

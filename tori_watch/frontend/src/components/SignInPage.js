@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import {
   Button,
   TextField,
@@ -18,46 +18,67 @@ import { Link, useNavigate } from "react-router-dom";
 
 function SignInPage() {
   const navigate = useNavigate();
+  const [error, setError] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
+  
+  console.log("Error state:", error);
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-
-    try {
-      const requestOptions = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: formData.username,
-          password: formData.password,
-        }),
-      };
-
-      const response = await fetch("/api/sign-in", requestOptions);
-      const data = await response.json();
-
-      console.log("working", data.uid);
-
-      // Assuming your server returns a user ID upon successful login
-      const userId = data.uid;
-
-      // Redirect to the dashboard
-      navigate(`/dashboard/${userId}`);
-    } catch (error) {
-      // Handle errors
-      console.error(error);
-    }
+  
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: formData.username,
+        password: formData.password,
+      }),
+    };
+  
+    fetch("/api/sign-in", requestOptions)
+      .then((response) => {
+        if (!response.ok) {
+          // If the HTTP request is not successful (e.g., 401 Unauthorized),
+          // handle the error based on the status code or response content
+          return response.json().then((errorText) => {
+            console.log('errorText',errorText)
+            console.log('errorText',errorText.detail)
+            const errorDetail = errorText.detail || "An error occurred.";
+            throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorDetail}`);
+          });
+        }
+  
+        return response.json();
+      })
+      .then((data) => {
+        // Assuming your server returns a user ID upon successful login
+        const userId = data.uid;
+        if (userId != null) {
+          // Redirect to the dashboard
+          navigate(`/dashboard/${userId}`);
+        }
+      })
+      .catch((error) => {
+        console.error("Error during fetch:", error);
+  
+        // Set the error state to the response body or a generic message
+        setError(error.message ?? "An error occurred. Please try again.");
+      });
   };
+  
+  
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prevData) => ({
-      ...prevData,
+  
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
       [name]: value,
-    }));
+    });
+    setError(""); // Clear the error message when input changes
   };
 
   return (
@@ -102,6 +123,7 @@ function SignInPage() {
             >
               <TextField
                 margin="normal"
+                error={Boolean(error)} // Convert error string to boolean
                 required
                 fullWidth
                 id="username"
@@ -111,18 +133,20 @@ function SignInPage() {
                 autoFocus
                 value={formData.username}
                 onChange={handleChange}
+                helperText={error && error} // Display error message if it exists
               />
               <TextField
                 margin="normal"
+                error={Boolean(error)} // Convert error string to boolean
                 required
                 fullWidth
-                name="password"
-                label="Password"
-                type="password"
                 id="password"
-                autoComplete="current-password"
+                label="Password"
+                name="password"
+                autoFocus
                 value={formData.password}
                 onChange={handleChange}
+                helperText={error && error} // Display error message if it exists
               />
               <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, createRef  } from 'react';
 import { useParams } from 'react-router-dom';
 import { createTheme, ThemeProvider, CssBaseline, Container, Typography, Button, Icon } from '@mui/material';
 import { saveAs } from 'file-saver';
@@ -8,7 +8,7 @@ import jsPDF from 'jspdf';
 import AppBarComponent from './AppBar';
 import DrawerComponent from './Drawer';
 import ChartCard from './ChartCard';
-import Filter from '../Filter';
+import Filter from './Filter';
 import DashboardCard from './HighlightCard';
 import AddButton from './AddButton';
 import PercentageCardComponent from './PercentageCard';
@@ -79,6 +79,21 @@ const Dashboard = () => {
     // Perform additional logic based on the changed filters, e.g., updating the data grid
     // This is where you can use the filters to filter your data
   };
+
+  const handleDelete = (index) => {
+    // Implement the logic to delete the chart at the specified index
+    // For example, if you're using an array to store charts, you can splice the array
+    const updatedCharts = [...charts]; // Assuming you have a state variable 'charts' that holds all the charts
+    updatedCharts.splice(index, 1); // Remove the chart at the specified index
+    console.log('Deleted chart');
+    setCharts(updatedCharts); // Update the state with the new array
+  };
+  
+  const handleModify = (index) => {
+    // Logic to modify the chart at the specified index
+    // You can implement a modal or other UI for modification
+    console.log(`Modify chart at index ${index}`);
+  };
   
   const handleAddChart = (chartType, dropdownOptions2) => {
     // Logic to generate new chart data based on chartType and dropdownOptions
@@ -86,7 +101,7 @@ const Dashboard = () => {
     console.log('Generated Chart Data:', newChartData);
     setCharts((prevCharts) => [...prevCharts, newChartData]);
   };
-
+  
   const generateChartData = (chartType, dropdownOptions2) => {
     // Example: Generate chart data based on the selected chart type
     // You can customize this based on your actual charting library and data structure
@@ -109,47 +124,81 @@ const Dashboard = () => {
       ],
     };
   };
-  const chartRefs = useRef(Array.from({ length: initialCharts.length }).map(() => createRef()));
-  const handleExport = () => {
-    const chartCards = chartRefs.current.map((ref) => ref.current);
-    if (chartsContainer) {
-      // Get all chart cards within the container
-      const chartCards = chartsContainer.querySelectorAll('.chart-card');
   
-      // Create an array of promises, each resolving to a blob URL of a chart card
+  const chartRefs = useRef(Array.from({ length: charts.length }).map(() => createRef()));
+
+  // const handleExport = () => {
+  //   const chartsContainer = chartsContainerRef.current;
+  //   if (chartsContainer) {
+  //     const chartCards = chartsContainer.querySelectorAll('.chart-card');
+  
+  //     const promises = Array.from(chartCards).map((chartCard) => {
+  //       return new Promise((resolve) => {
+  //         html2canvas(chartCard).then((canvas) => {
+  //           const imgData = canvas.toDataURL('image/png');
+  //           resolve(imgData);
+  //         });
+  //       });
+  //     });
+  
+  //     Promise.all(promises).then((imgDataArray) => {
+  //       const mergedPdf = new jsPDF();
+  
+  //       imgDataArray.forEach((imgData, index) => {
+  //         if (index > 0) {
+  //           mergedPdf.addPage();
+  //         }
+  //         mergedPdf.addImage(imgData, 'JPEG', 0, 0);
+  //       });
+  
+  //       mergedPdf.save('charts_export.pdf');
+  //     });
+  //   }
+  // };
+  const handleExport = () => {
+    const chartsContainer = chartsContainerRef.current;
+    if (chartsContainer) {
+      const chartCards = chartsContainer.querySelectorAll('.chart-card');
+
       const promises = Array.from(chartCards).map((chartCard) => {
         return new Promise((resolve) => {
-          html2pdf(chartCard, {
-            margin: 10,
-            filename: 'charts_export.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-          }).then((pdf) => {
-            resolve(pdf.output('bloburl'));
+          html2canvas(chartCard).then((canvas) => {
+            const imgData = canvas.toDataURL('image/png');
+            resolve(imgData);
           });
         });
       });
-  
-      // Once all promises are resolved, create a merged PDF
-      Promise.all(promises).then((blobUrls) => {
+
+      Promise.all(promises).then((imgDataArray) => {
         const mergedPdf = new jsPDF();
-  
-        blobUrls.forEach((blobUrl, index) => {
+
+        imgDataArray.forEach((imgData, index) => {
           if (index > 0) {
             mergedPdf.addPage();
           }
-  
-          // Add the chart image to the PDF
-          mergedPdf.addImage(blobUrl, 'JPEG', 0, 0);
+          mergedPdf.addImage(imgData, 'JPEG', 0, 0);
         });
-  
-        // Download the merged PDF
+
         mergedPdf.save('charts_export.pdf');
       });
     }
   };
-
+  // const handleExport = () => {
+  //   const pdf = new jsPDF();
+  
+  //   chartRefs.current.forEach((chartRef, index) => {
+  //     const base64Image = chartRef.current.chart.toBase64Image();
+  
+  //     if (index > 0) {
+  //       pdf.addPage();
+  //     }
+  
+  //     pdf.addImage(base64Image, 'JPEG', 0, 0);
+  //   });
+  
+  //   pdf.save('charts_export.pdf');
+  // };
+  
   const chartData = {
     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
     datasets: [
@@ -250,7 +299,7 @@ const Dashboard = () => {
             }}
           >
             <Typography variant="h5" style={{ flex: 1, padding: '50px' }}>
-              Welcome to Dashboards {userDetails.username}!
+              Welcome to Dashboardsss {userDetails.username}!
             </Typography>
             <div
               style={{
@@ -357,19 +406,9 @@ const Dashboard = () => {
             </div>
             <Filter filters={filters} onFilterChange={handleFilterChange} />
             {/* Container for charts (moved below the main content) */}
-            <div id = 'charts-container'
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'space-around',
-                alignItems: 'flex-start',
-                flexWrap: 'wrap',
-                overflowY: 'auto',
-              }}
-            >
-              {/* Static Chart Cards */}
-               <div
-              id="charts-container"
+
+           <div
+              id="charts-container" 
               style={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -396,6 +435,8 @@ const Dashboard = () => {
                   dropdownCount={3}
                   dropdownOptions={dropdownOptions[2]}
                   chartRef={chartRefs.current[0]}
+                  onDelete={() => handleDelete(0)} // Ensure this is correct
+                  onModify={() => handleModify(0)}
                 />
               </div>
               <div
@@ -414,6 +455,8 @@ const Dashboard = () => {
                   dropdownCount={2}
                   dropdownOptions={dropdownOptions[2]}
                   chartRef={chartRefs.current[1]}
+                  onDelete={() => handleDelete(1)}
+                  onModify={() => handleModify(1)}
                 />
               </div>
               <div
@@ -432,6 +475,8 @@ const Dashboard = () => {
                   dropdownCount={2}
                   dropdownOptions={dropdownOptions[2]}
                   chartRef={chartRefs.current[2]}
+                  onDelete={() => handleDelete(2)}
+                  onModify={() => handleModify(2)}
                 />
               </div>
 
@@ -454,9 +499,12 @@ const Dashboard = () => {
                     dropdownCount={3}
                     dropdownOptions={dropdownOptions[2]}
                     chartRef={chartRefs.current[index + 3]}
-                  />
+                    onDelete={() => handleDelete(index)}
+                    onModify={() => handleModify(index)}
+                    />
                 </div>
               ))}
+              
             </div>
           </div>
         </div>
