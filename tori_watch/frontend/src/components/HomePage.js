@@ -13,6 +13,7 @@ export default class HomePage extends Component {
   render() {
     console.log('RENDER');
     return (
+      
       <Router>
         <Routes>
           <Route path="/" element={ <p>HELL0</p>} />

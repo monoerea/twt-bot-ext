@@ -418,68 +418,6 @@ const Dashboard = () => {
                 overflowY: 'auto',
               }}
             >
-              {/* Static Chart Cards */}
-              <div
-                style={{
-                  flex: '1 1 300px',
-                  margin: '10px',
-                  borderRadius: '10px',
-                  overflow: 'hidden',
-                }}
-              >
-                <ChartCard
-                  classname="chart-card"
-                  chartType="bar"
-                  chartData={chartData}
-                  chartOptions={chartOptions}
-                  dropdownCount={3}
-                  dropdownOptions={dropdownOptions[2]}
-                  chartRef={chartRefs.current[0]}
-                  onDelete={() => handleDelete(0)} // Ensure this is correct
-                  onModify={() => handleModify(0)}
-                />
-              </div>
-              <div
-                style={{
-                  flex: '1 1 300px',
-                  margin: '10px',
-                  borderRadius: '10px',
-                  overflow: 'hidden',
-                }}
-              >
-                <ChartCard
-                  classname="chart-card"
-                  chartType="line"
-                  chartData={chartData}
-                  chartOptions={chartOptions}
-                  dropdownCount={2}
-                  dropdownOptions={dropdownOptions[2]}
-                  chartRef={chartRefs.current[1]}
-                  onDelete={() => handleDelete(1)}
-                  onModify={() => handleModify(1)}
-                />
-              </div>
-              <div
-                style={{
-                  flex: '1 1 300px',
-                  margin: '10px',
-                  borderRadius: '10px',
-                  overflow: 'hidden',
-                }}
-              >
-                <ChartCard
-                  classname="chart-card"
-                  chartType="doughnut"
-                  chartData={chartData}
-                  chartOptions={chartOptions}
-                  dropdownCount={2}
-                  dropdownOptions={dropdownOptions[2]}
-                  chartRef={chartRefs.current[2]}
-                  onDelete={() => handleDelete(2)}
-                  onModify={() => handleModify(2)}
-                />
-              </div>
-
               {/* Dynamic Chart Cards */}
               {charts.map((chartData, index) => (
                 <div
