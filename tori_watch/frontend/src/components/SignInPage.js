@@ -12,7 +12,11 @@ import {
   ThemeProvider,
   CssBaseline,
   Avatar,
+  InputAdornment,
+  IconButton,
 } from "@mui/material";
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -23,7 +27,8 @@ function SignInPage() {
     username: "",
     password: "",
   });
-  
+  const [showPassword, setShowPassword] = useState(false);
+
   console.log("Error state:", error);
 
   const handleSubmit = (event) => {
@@ -68,9 +73,6 @@ function SignInPage() {
         setError(error.message ?? "An error occurred. Please try again.");
       });
   };
-  
-  
-
   
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -136,17 +138,28 @@ function SignInPage() {
                 helperText={error && error} // Display error message if it exists
               />
               <TextField
-                margin="normal"
-                error={Boolean(error)} // Convert error string to boolean
+                error={Boolean(error)}
+                helperText={error}
                 required
                 fullWidth
-                id="password"
-                label="Password"
                 name="password"
-                autoFocus
-                value={formData.password}
+                label="Password"
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                autoComplete="new-password"
                 onChange={handleChange}
-                helperText={error && error} // Display error message if it exists
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        edge="end"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
               <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}
