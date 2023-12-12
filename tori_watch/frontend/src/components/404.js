@@ -25,7 +25,7 @@ const NotFound404 = () =>{
             <CssBaseline />
             <Container >
                 <div>
-                    <AppBarComponent/>
+                    <AppBarComponent name={"Test"}/>
                     <h2>PAGE NOT FOUND</h2>
                 </div>
                 

@@ -255,7 +255,7 @@ const Dashboard = () => {
         {/* Drawer */}
         <div style={{ flex: '0 0 auto' }}>
           <DrawerComponent open={open} drawerWidth={drawerWidth} />
-          <AppBarComponent open={open} toggleDrawer={toggleDrawer} />
+          <AppBarComponent open={open} toggleDrawer={toggleDrawer} name={'Dashboard'}/>
         </div>
 
         {/* Main content */}
@@ -299,7 +299,7 @@ const Dashboard = () => {
             }}
           >
             <Typography variant="h5" style={{ flex: 1, padding: '50px' }}>
-              Welcome to Dashboardsss {userDetails.username}!
+              Welcome to Dashboards {userDetails.username}!
             </Typography>
             <div
               style={{

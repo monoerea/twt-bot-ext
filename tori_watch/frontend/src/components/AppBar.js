@@ -21,14 +21,14 @@ const AppBarStyled = styled(AppBar, {
   }),
 }));
 
-const AppBarComponent = ({ open, toggleDrawer }) => (
+const AppBarComponent = ({ open, toggleDrawer, name }) => (
   <AppBarStyled open={open}>
     <Toolbar>
       <IconButton onClick={toggleDrawer}>
         <MenuIcon />
       </IconButton>
       <Typography variant="h6" noWrap>
-        Dashboard
+        {name}
       </Typography>
     </Toolbar>
   </AppBarStyled>
