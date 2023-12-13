@@ -13,95 +13,95 @@ import {
   GridActionsCellItem,
   GridRowEditStopReasons,
 } from '@mui/x-data-grid';
-import {
-  randomCreatedDate,
-  randomTraderName,
-  randomId,
-  randomArrayItem,
-} from '@mui/x-data-grid-generator';
-
-// const initialRows = [
-//   {
-//     id: randomId(),
-//     name: randomTraderName(),
-//     age: 25,
-//     joinDate: randomCreatedDate(),
-//     role: randomRole(),
-//   },
-//   {
-//     id: randomId(),
-//     name: randomTraderName(),
-//     age: 36,
-//     joinDate: randomCreatedDate(),
-//     role: randomRole(),
-//   },
-//   {
-//     id: randomId(),
-//     name: randomTraderName(),
-//     age: 19,
-//     joinDate: randomCreatedDate(),
-//     role: randomRole(),
-//   },
-//   {
-//     id: randomId(),
-//     name: randomTraderName(),
-//     age: 28,
-//     joinDate: randomCreatedDate(),
-//     role: randomRole(),
-//   },
-//   {
-//     id: randomId(),
-//     name: randomTraderName(),
-//     age: 23,
-//     joinDate: randomCreatedDate(),
-//     role: randomRole(),
-//   },
-// ];
+import randomId from './utils';
 
 function EditToolbar(props) {
   const { setRows, setRowModesModel } = props;
 
   const handleClick = () => {
     const id = randomId();
-    const newRecord = { id, session_id: '', username: '', isNew: true };  // Make sure the field names match the columns
-    
+    const session_id = randomId();
+    const newRecord = { id, session_id, username: '', isNew: true };
+
     setRows((oldRows) => [...oldRows, newRecord]);
     setRowModesModel((oldModel) => ({
       ...oldModel,
       [id]: { mode: GridRowModes.Edit, fieldToFocus: 'username' },
     }));
   };
-  
 
   return (
     <GridToolbarContainer>
       <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
-        Add record
+        Add records
       </Button>
     </GridToolbarContainer>
   );
 }
 
-export default function FullFeaturedCrudGrid({initialRows  = []}) {
+export default function FullFeaturedCrudGrid({ initialRows = [], onSaveChanges }) {
   const [rows, setRows] = React.useState(initialRows);
   const [rowModesModel, setRowModesModel] = React.useState({});
+  const [unsavedChanges, setUnsavedChanges] = React.useState([]);
 
   const handleRowEditStop = (params, event) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
-      event.defaultMuiPrevented = true;
+      // Row has been unfocused
+      handleSaveChanges();
+      setRowModesModel((prevModesModel) => ({
+        ...prevModesModel,
+        [params.id]: { mode: GridRowModes.View, isEdited: false },
+      }));
     }
   };
 
   const handleEditClick = (id) => () => {
+    console.log('Edit clicked for row with id:', id);
+
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
   };
 
   const handleSaveClick = (id) => () => {
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
+    console.log('setted rows?',rows)
+    setRowModesModel((prevModesModel) => ({
+      ...prevModesModel,
+      [id]: { mode: GridRowModes.View },
+    }));
+    
+    handleSaveChanges();
   };
 
+  const handleSaveChanges = () => {
+    console.log('Attempting to save changes...');
+    const updatedRows = unsavedChanges.map((change) => {
+      const { id, field, value } = change;
+      const row = rows.find((r) => r.id === id);
+      if (row) {
+        console.log('HSG', change, row);
+        return { ...row, [field]: value, isEdited: true };
+      }
+      return null;
+    });
+
+    const filteredRows = rows.filter((row) => !row.isEdited);
+    const mergedRows = [...filteredRows, ...updatedRows];
+
+    console.log('Merged Rows:', mergedRows);
+
+    if (updatedRows.length > 0) {
+      onSaveChanges(mergedRows);
+      setUnsavedChanges([]);
+    }
+  };
+
+
   const handleDeleteClick = (id) => () => {
-    setRows(rows.filter((row) => row.id !== id));
+    const updatedRows = rows.map((row) =>
+        row.id === id ? { ...row,  isDeleted: true } : row
+      );
+    setRows((prevRows) => prevRows.filter((row) => row.id !== id));
+    console.log('Deleted Rows:',updatedRows)
+    onSaveChanges(updatedRows)
   };
 
   const handleCancelClick = (id) => () => {
@@ -112,14 +112,41 @@ export default function FullFeaturedCrudGrid({initialRows  = []}) {
 
     const editedRow = rows.find((row) => row.id === id);
     if (editedRow.isNew) {
-      setRows(rows.filter((row) => row.id !== id));
+      setRows((prevRows) => prevRows.filter((row) => row.id !== id));
     }
   };
 
-  const processRowUpdate = (newRow) => {
-    const updatedRow = { ...newRow, isNew: false };
-    setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-    return updatedRow;
+  const processRowUpdate = (params) => {
+    const { id, field, value } = params;
+  
+    console.log('Processing row update:', params);
+    const updatedRows = rows.map((row) =>
+        row.id === id ? { ...params,  isEdited: true } : row
+      );
+  
+    console.log('Updated rows:', updatedRows);
+    setRows(updatedRows);
+  
+    setUnsavedChanges((prevChanges) => {
+      const existingChangeIndex = prevChanges.findIndex(
+        (change) => change.id === id && change.field === field
+      );
+  
+      if (existingChangeIndex !== -1) {
+        // Update existing change
+        const updatedChanges = [...prevChanges];
+        updatedChanges[existingChangeIndex] = { id, field, value };
+        return updatedChanges;
+      }
+  
+      // Add new change
+      return [...prevChanges, { id, field, value }];
+    });
+  
+    console.log('Unsaved changes:', unsavedChanges);
+    console.log('Updated rows:', updatedRows);
+    onSaveChanges(updatedRows);
+    return params;
   };
 
   const handleRowModesModelChange = (newRowModesModel) => {
@@ -142,7 +169,23 @@ export default function FullFeaturedCrudGrid({initialRows  = []}) {
       width: 100,
       align: 'left',
       headerAlign: 'left',
-      editable: false,
+      editable: true,
+    },
+    {
+      field: 'email',
+      headerName: 'Email',
+      width: 100,
+      align: 'left',
+      headerAlign: 'left',
+      editable: true,
+    },
+    {
+      field: 'password',
+      headerName: 'Password',
+      width: 100,
+      align: 'left',
+      headerAlign: 'left',
+      editable: true,
     },
     {
       field: 'created_at',
@@ -151,19 +194,9 @@ export default function FullFeaturedCrudGrid({initialRows  = []}) {
       width: 180,
       editable: true,
       valueGetter: (params) => {
-        // Assuming that 'created_at' is a string representing a date
-        // You might need to adjust this based on your actual data structure
         const dateString = params.row.created_at;
         return new Date(dateString);
       },
-    },
-    {
-      field: 'role',
-      headerName: 'Department',
-      width: 220,
-      editable: true,
-      type: 'singleSelect',
-      valueOptions: ['Market', 'Finance', 'Development'],
     },
     {
       field: 'actions',
@@ -234,6 +267,10 @@ export default function FullFeaturedCrudGrid({initialRows  = []}) {
         onRowModesModelChange={handleRowModesModelChange}
         onRowEditStop={handleRowEditStop}
         processRowUpdate={processRowUpdate}
+        onProcessRowUpdateError={(error) => {
+    // Handle the error appropriately, e.g., log it
+    console.error('Error updating row:', error);
+  }}
         slots={{
           toolbar: EditToolbar,
         }}
