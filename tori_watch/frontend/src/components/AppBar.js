@@ -12,26 +12,26 @@ const AppBarStyled = styled(AppBar, {
     duration: theme.transitions.duration.leavingScreen,
   }),
   ...(open && {
-    marginLeft: 150, // Assuming drawerWidth is 240
-    width: `calc(100% - 150px)`,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
+    marginLeft: 160, // Assuming drawerWidth is 240
+  width: `calc(100% - 160px)`,
+  transition: theme.transitions.create(['width', 'margin'], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
   }),
+}),
 }));
 
 const AppBarComponent = ({ open, toggleDrawer, name }) => (
   <AppBarStyled open={open}>
-    <Toolbar>
-      <IconButton onClick={toggleDrawer}>
-        <MenuIcon />
-      </IconButton>
-      <Typography variant="h6" noWrap>
-        {name}
-      </Typography>
-    </Toolbar>
-  </AppBarStyled>
-);
+      <Toolbar>
+        <IconButton onClick={toggleDrawer}>
+          <MenuIcon />
+        </IconButton>
+        <Typography variant="h6" noWrap>
+          {name}
+        </Typography>
+      </Toolbar>
+    </AppBarStyled>
+  );
 
 export default AppBarComponent;

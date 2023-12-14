@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+
 export const saveUserChanges = (updatedRows) => {
   const savePromises = updatedRows.map((row) => {
     const { id, isNew, isDeleted, ...otherData } = row;
@@ -66,3 +68,26 @@ export const saveUserChanges = (updatedRows) => {
       throw new Error(`Error saving changes: ${error.message}`);
     });
 };
+export const fetchData = (apiEndpoint, setRows) =>{
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    const absoluteUrl = new URL(apiEndpoint, window.location.origin);
+    // Fetch user data from your API or backend server
+    const fetchData = fetch(absoluteUrl).then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then((data) => {
+      // Rename 'uid' to 'id'
+      const rowsWithIds = data.map((row) => ({ ...row, id: row.uid }));
+      setRows(rowsWithIds);
+      // console.log(rows, rowsWithIds);
+    })
+    .catch((error) => {
+      console.error('Error fetching user data:', error);
+    });
+    setData(fetchData);
+  }, [apiEndpoint, setRows]); 
+}

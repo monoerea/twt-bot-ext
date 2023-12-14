@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, Typography, Button } from '@mui/material';
 
-const DashboardCard = ({ title, content, buttonText, onClick }) => {
+const HighlightCard = ({ title, content, buttonText, onClick }) => {
   return (
     <Card style={{ maxWidth: 300, margin: '10px', borderRadius: '10px' }}>
       <CardContent>
@@ -21,4 +21,4 @@ const DashboardCard = ({ title, content, buttonText, onClick }) => {
   );
 };
 
-export default DashboardCard;
+export default HighlightCard;

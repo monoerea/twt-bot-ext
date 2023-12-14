@@ -3,18 +3,19 @@ import { useParams } from 'react-router-dom';
 import { createTheme, ThemeProvider, CssBaseline, Container, Typography, Button, Icon } from '@mui/material';
 import { saveAs } from 'file-saver';
 import jsPDF from 'jspdf';
-
+import { Home, BarChart, Settings } from '@mui/icons-material';
 
 import AppBarComponent from './AppBar';
 import DrawerComponent from './Drawer';
 import ChartCard from './ChartCard';
 import Filter from './Filter';
-import DashboardCard from './HighlightCard';
+import HighlightCard from './HighlightCard';
 import AddButton from './AddButton';
 import PercentageCardComponent from './PercentageCard';
 
 import { Chart } from 'chart.js';
 import * as Chartjs from 'chart.js';
+
 
 const controllers = Object.values(Chartjs).filter((chart) => chart.id !== undefined);
 
@@ -237,7 +238,11 @@ const Dashboard = () => {
       { label: 'Option 3', value: 'option3' },
     ],
   ];
-
+  const drawerItems = [
+    { icon: <Home />, text: 'Home' },
+    { icon: <BarChart />, text: 'Charts' },
+    { icon: <Settings />, text: 'Settings' },
+  ];
   return (
     <ThemeProvider theme={defaultTheme}>
       <CssBaseline />
@@ -254,7 +259,7 @@ const Dashboard = () => {
       >
         {/* Drawer */}
         <div style={{ flex: '0 0 auto' }}>
-          <DrawerComponent open={open} drawerWidth={drawerWidth} />
+        <DrawerComponent open={open} drawerItems={drawerItems}/>
           <AppBarComponent open={open} toggleDrawer={toggleDrawer} name={'Dashboard'}/>
         </div>
 
@@ -380,7 +385,7 @@ const Dashboard = () => {
                     overflow: 'hidden',
                   }}
                 >
-                  <DashboardCard
+                  <HighlightCard
                     title="Card Title"
                     content="This is the content of the card. You can customize it based on your needs."
                     buttonText="Click Me"
@@ -395,7 +400,7 @@ const Dashboard = () => {
                     overflow: 'hidden',
                   }}
                 >
-                  <DashboardCard
+                  <HighlightCard
                     title="Card Title"
                     content="This is the content of the card. You can customize it based on your needs."
                     buttonText="Click Me"
