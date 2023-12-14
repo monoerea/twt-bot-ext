@@ -23,7 +23,7 @@ export const Test = () =>{
       };
   
  return(
-    <MainWrapper drawerItems = {drawerItems} appBarName = {'Tests'}>
+    <MainWrapper drawer = {'false'} drawerItems = {drawerItems} appBarName = {'Tests'}>
         {rows.length > 0 ? (
             <FullFeaturedCrudGrid initialRows={rows} onSaveChanges={handleSaveChanges} />
           ) : (

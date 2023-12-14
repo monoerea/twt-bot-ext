@@ -14,8 +14,8 @@ Chart.register(...controllers);
 
 const defaultTheme = createTheme();
 
-const MainWrapper = ({children, drawerItems, appBarName}) => {
-  const [open, setOpen] = useState(true);
+const MainWrapper = ({children, drawer, drawerItems, appBarName}) => {
+  const [open, setOpen] = useState(false);
 
   const toggleDrawer = () => {
     setOpen(!open);
@@ -23,15 +23,29 @@ const MainWrapper = ({children, drawerItems, appBarName}) => {
 
   return (
     <ThemeProvider theme={defaultTheme}>
-      <Container component="main" maxWidth='xl' justifyContent='center' sx={{ display: 'flex' }}>
+      <Container component="main" maxWidth='xl' justifyContent='center' sx={{ display: 'flex', justifyContent:'center', minWidth:'false' }}>
         <CssBaseline />
-        <Box  sx={{ display: 'flex' }}>
-          <DrawerComponent open={open} drawerItems={drawerItems}/>
+        {/* <Box  sx={{ display: 'flex' }}>
+          {drawer && <DrawerComponent open={open} drawerItems={drawerItems} />}
           <AppBarComponent open={open} toggleDrawer={toggleDrawer} name={appBarName} />
-        </Box>
-        <Box mt={4} pt={4} textAlign="center" justifyContent={'center'}>
+        </Box> */}
+        <div style={{ flex: '0 0 auto' }}>
+          {drawer && <DrawerComponent open={open} drawerItems={drawerItems} />}
+          <AppBarComponent open={open} toggleDrawer={toggleDrawer} name={appBarName} />
+        </div>
+        <Box
+          flex="1"
+          display="flex"
+          flexDirection="column"
+          marginTop="60px"
+          padding="20px"
+          justifyContent="space-between"
+          position="sticky"
+          top="0"
+          overflowY="auto"
+        >
           <ErrorBoundary>
-             {children}
+            {children}
           </ErrorBoundary>
         </Box>
       </Container>
