@@ -21,7 +21,8 @@ const UserPage = () => {
       });
   };
   return (
-    <MainWrapper drawerItems = {drawerItems} appBarName = {'User Management'}>
+    <MainWrapper drawer ={true} drawerItems = {drawerItems} appBarName = {'User Management'}>
+        
         {rows.length > 0 ? (
             <FullFeaturedCrudGrid initialRows={rows} onSaveChanges={handleSaveChanges} />
           ) : (

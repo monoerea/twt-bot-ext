@@ -259,8 +259,9 @@ const Dashboard = () => {
       >
         {/* Drawer */}
         <div style={{ flex: '0 0 auto' }}>
+        <AppBarComponent open={open} toggleDrawer={toggleDrawer} name={'Dashboard'}/>
         <DrawerComponent open={open} drawerItems={drawerItems}/>
-          <AppBarComponent open={open} toggleDrawer={toggleDrawer} name={'Dashboard'}/>
+          
         </div>
 
         {/* Main content */}

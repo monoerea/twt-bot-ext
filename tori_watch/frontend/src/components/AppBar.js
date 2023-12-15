@@ -1,6 +1,6 @@
 // AppBarComponent.js
 import React from 'react';
-import { styled, AppBar, Toolbar, Typography, IconButton } from '@mui/material';
+import { styled, AppBar, Toolbar, Typography, IconButton, Container } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 
 const AppBarStyled = styled(AppBar, {
@@ -22,15 +22,17 @@ const AppBarStyled = styled(AppBar, {
 }));
 
 const AppBarComponent = ({ open, toggleDrawer, name }) => (
-  <AppBarStyled open={open}>
-      <Toolbar>
-        <IconButton onClick={toggleDrawer}>
-          <MenuIcon />
-        </IconButton>
-        <Typography variant="h6" noWrap>
-          {name}
-        </Typography>
-      </Toolbar>
+  <AppBarStyled position={'static'} open={open}>
+    <Container>
+        <Toolbar>
+          <IconButton onClick={toggleDrawer}>
+            <MenuIcon />
+          </IconButton>
+          <Typography variant="h6" noWrap>
+            {name}
+          </Typography>
+        </Toolbar>
+      </Container>
     </AppBarStyled>
   );
 

@@ -14,7 +14,7 @@ const DrawerStyled = styled(Drawer, { shouldForwardProp: (prop) => prop !== 'ope
         duration: theme.transitions.duration.enteringScreen,
       }),
       boxSizing: 'border-box',
-      marginTop: theme.spacing(8),
+      // marginTop: theme.spacing(8),
       ...(!open && {
         overflowX: 'hidden',
         transition: theme.transitions.create('width', {

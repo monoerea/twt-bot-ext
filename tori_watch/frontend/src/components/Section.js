@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 import HighlightCard from "./HighlightCard";
 export const SectionWrapper = ({children, highlightItems}) =>{
     return(
-        <Box pt={4} justifyContent={"space-between"} display = {'flex'} p={3} alignItems="center" alignContent={'center'} minWidth={'sm'} flex={1} >
+        <Box justifyContent={"space-evenly"} display = {'flex'} alignItems="center" alignContent={'center'} minWidth={'sm'} flex={1} >
         {highlightItems.map((item, index) => (
             <HighlightCard
             key={index}

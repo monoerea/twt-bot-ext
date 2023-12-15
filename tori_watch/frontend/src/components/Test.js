@@ -1,33 +1,21 @@
-import React, {useState} from "react";
+import React from "react";
 import { Box } from "@mui/material";
+import HighlightCard from "./HighlightCard";
 import MainWrapper from "./MainWrapper";
-import { fetchData, saveUserChanges } from "./api";
-import FullFeaturedCrudGrid from "./CrudGrid";
-import { drawerItems } from "./constants";
+import { SectionWrapper } from "./Section";
+import { drawerItems, settings, highlightItems } from "./constants";
+import { Header } from "./Header";
 
-export const Test = () =>{
-    const [rows, setRows] = useState([])
-    fetchData('api/user', setRows)
-    const handleSaveChanges = (updatedRows) => {
-        // Call the API function to save changes
-        console.log('UserPage',updatedRows)
-        saveUserChanges(updatedRows)
-          .then((response) => {
-            // Handle the response, e.g., show a success message
-            console.log('Changes saved successfully:', response);
-          })
-          .catch((error) => {
-            // Handle errors, e.g., show an error message
-            console.error('Error saving changes:', error);
-          });
-      };
-  
- return(
-    <MainWrapper drawer = {'false'} drawerItems = {drawerItems} appBarName = {'Tests'}>
-        {rows.length > 0 ? (
-            <FullFeaturedCrudGrid initialRows={rows} onSaveChanges={handleSaveChanges} />
-          ) : (
-        <p>Loading...</p>)}
+const items = [
+        {name:'Export Chart', link:'/'},
+        {name:'Add Chart', link:'/'}
+      ]
+export const Test = () => {
+  return (
+    <MainWrapper navbar={false} appBarName={'Test'} drawer={true} drawerItems={drawerItems}>
+        <Header title={'Dashboard'} items={items}/>
+        <SectionWrapper highlightItems={highlightItems}>
+        </SectionWrapper>
     </MainWrapper>
- );
-}
+  );
+};
