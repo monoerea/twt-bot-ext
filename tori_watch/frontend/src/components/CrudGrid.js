@@ -15,13 +15,15 @@ import {
 } from '@mui/x-data-grid';
 import randomId from './utils';
 
+
+
+
 function EditToolbar(props) {
   const { setRows, setRowModesModel } = props;
 
   const handleClick = () => {
     const id = randomId();
-    const session_id = randomId();
-    const newRecord = { id, session_id, username: '', isNew: true };
+    const newRecord = { id, username: '', isNew: true };
 
     setRows((oldRows) => [...oldRows, newRecord]);
     setRowModesModel((oldModel) => ({
@@ -156,14 +158,6 @@ export default function FullFeaturedCrudGrid({ initialRows = [], onSaveChanges }
   const columns = [
     { field: 'id', headerName: 'ID', width: 180, editable: false },
     {
-      field: 'session_id',
-      headerName: 'Session ID',
-      width: 180,
-      align: 'left',
-      headerAlign: 'left',
-      editable: false,
-    },
-    {
       field: 'username',
       headerName: 'Username',
       width: 100,
@@ -192,12 +186,23 @@ export default function FullFeaturedCrudGrid({ initialRows = [], onSaveChanges }
       headerName: 'Join date',
       type: 'date',
       width: 180,
-      editable: true,
+      editable: false,
       valueGetter: (params) => {
-        const dateString = params.row.created_at;
-        return new Date(dateString);
-      },
+            const dateString = params.row.created_at;
+            return new Date(dateString);
+          },
     },
+    // {
+    //   field: 'created_at',
+    //   headerName: 'Join date',
+    //   type: 'date',
+    //   width: 180,
+    //   editable: false,
+    //   valueGetter: (params) => {
+    //     const dateString = params.row.created_at;
+    //     return new Date(dateString);
+    //   },
+    // },
     {
       field: 'actions',
       type: 'actions',
@@ -206,7 +211,7 @@ export default function FullFeaturedCrudGrid({ initialRows = [], onSaveChanges }
       cellClassName: 'actions',
       getActions: ({ id }) => {
         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-
+  
         if (isInEditMode) {
           return [
             <GridActionsCellItem
@@ -226,7 +231,7 @@ export default function FullFeaturedCrudGrid({ initialRows = [], onSaveChanges }
             />,
           ];
         }
-
+  
         return [
           <GridActionsCellItem
             icon={<EditIcon />}

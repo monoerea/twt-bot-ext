@@ -1,7 +1,9 @@
 from django.db import models
-
+from django.contrib.auth.models import AbstractUser
 import string
 import random
+from .managers import CustomUserManager
+
 def generate_ids():
     length = 30
     while True:
@@ -11,16 +13,18 @@ def generate_ids():
     return uid
 
 # Create your models here.
-class User(models.Model):
+class User(AbstractUser):
     uid = models.CharField(max_length=30,primary_key=True, default=generate_ids, unique=True)
-    session_id = models.CharField(max_length=128,default=generate_ids, unique=True)
     email = models.EmailField(null=False, default='')
     password = models.CharField(max_length=68, default="", unique=False)
     username = models.CharField(max_length=20, default="", unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
-
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['password', 'email']
+    objects = CustomUserManager()
     def __str__(self):
         return self.username
+    
 class TwitterUser(models.Model):
     user_id = models.BigIntegerField(primary_key=True, unique=True)
     screen_name = models.CharField(max_length=50)

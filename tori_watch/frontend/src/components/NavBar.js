@@ -22,18 +22,16 @@ function NavBar({ pageList, settings, logoImg, login, avatar, children }) {
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
-
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
-
+  const handleOpenUserMenu = (event) => {
+    setAnchorElUser(event.currentTarget);
+  };
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+  
 
   React.useEffect(() => {
     setPages(pageList);
@@ -93,7 +91,7 @@ function NavBar({ pageList, settings, logoImg, login, avatar, children }) {
                 display: { xs: 'block', md: 'none' },
               }}
             >
-              {pages.map((page) => (
+              {pages && pages.map((page) => (
                 <MenuItem key={page.title} onClick={handleCloseNavMenu}>
                   <Typography component={Link} to={page.link} textAlign="center" variant="body1" color="inherit">
                     {page.title}

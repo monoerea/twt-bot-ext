@@ -13,6 +13,8 @@ import HighlightCard from './HighlightCard';
 import AddButton from './AddButton';
 import PercentageCardComponent from './PercentageCard';
 
+import { useFetchLoggedInUser } from './api';
+
 import { Chart } from 'chart.js';
 import * as Chartjs from 'chart.js';
 
@@ -31,31 +33,15 @@ const Dashboard = () => {
   const [filterValue, setFilterValue] = useState('');
   const [charts, setCharts] = useState([]); // Array to store chart data
   const [userDetails, setUserDetails] = useState({
-    username: '',
+    username:'',
   });
-
 
   const toggleDrawer = () => {
     setOpen(!open);
   };
 
-  const getUserDetails = async () => {
-    try {
-      const response = await fetch(`/api/user/${uid}`);
-      const data = await response.json();
-
-      setUserDetails({
-        username: data.username,
-      });
-    } catch (error) {
-      console.error('Error fetching user details:', error);
-    }
-  };
-
-  useEffect(() => {
-    getUserDetails();
-  }, [uid]);
-
+  useFetchLoggedInUser(setUserDetails);
+  console.log('User Details', userDetails);
   const columns = [
     { field: 'id', headerName: 'ID', width: 70 },
     { field: 'firstName', headerName: 'First name', width: 130 },

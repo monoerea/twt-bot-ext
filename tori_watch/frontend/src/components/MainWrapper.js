@@ -1,42 +1,52 @@
 import React, { useState, useEffect, useRef, createRef  } from 'react';
 import { createTheme, ThemeProvider, CssBaseline, Container, Typography, Button, Icon, Box} from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 
-import AppBarComponent from './AppBar';
-import DrawerComponent from './Drawer';
+import AppBarComponent from './AppBars';
+import DrawerComponent from './Drawers';
 import ErrorBoundary from './ErrorBoundary';
 
 import { Chart } from 'chart.js';
 import * as Chartjs from 'chart.js';
 import NavBar from './NavBar';
+import MiniDrawer from './MiniDrawer';
 
 const controllers = Object.values(Chartjs).filter((chart) => chart.id !== undefined);
 
 Chart.register(...controllers);
 
-const defaultTheme = createTheme();
 
-const MainWrapper = ({children, drawer, drawerItems, appBarName, navbar, pages, settings, logoImg, login, avatar}) => {
+
+const MainWrapper = ({children, drawer, drawerWidth, navbar, pages, settings, login, avatar, items, title, logoImg}) => {
   const [open, setOpen] = useState(false);
+  const theme = useTheme();
+  const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
 
-  const toggleDrawer = () => {
-    setOpen(!open);
+  const handleDrawerClose = () => {
+    setOpen(false);
   };
   console.log('MainWrapper', pages)
 
   return (
-    <ThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={theme}>
       <Box>
         <CssBaseline />
+        
         {navbar && <NavBar pageList={pages} settings={settings} logoImg={logoImg} login={login} avatar={avatar}/>}
-        {appBarName && <AppBarComponent open={open} toggleDrawer={toggleDrawer} name={appBarName} />}
+        {title && <AppBarComponent open={open} drawerWidth={drawerWidth} title={title} avatar={avatar} settings={settings} handleDrawerOpen={handleDrawerOpen}/>}
           <Box display={'flex'} flex={'0 0 auto'}>
-              {drawer && <DrawerComponent open={open} drawerItems={drawerItems} />}
+              {/* {items && <MiniDrawer itemList={items} title={title} avatar={avatar} settings={settings}/>} */}
+              {drawer && <DrawerComponent theme={theme} open={open} drawerWidth={drawerWidth} items={items} handleDrawerClose={handleDrawerClose}/>}
               <Box
-              flex="1"
+              component={'main'}
+              mt={items ? 7:0}
+              flex={1}
               display="flex"
               flexDirection="column"
-              // marginTop="60px"
-              // padding="20px"
+              p = {4}
               justifyContent="space-between"
               position="sticky"
               top="0"

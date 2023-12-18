@@ -1,4 +1,12 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+// const csrfToken = document.cookie.match(/csrftoken=([^ ;]+)/)[0];
+const headers = new Headers({
+  // 'X-CSRFTOKEN': csrfToken,
+  'Content-Type': 'application/json',
+});
+
 
 export const saveUserChanges = (updatedRows) => {
   const savePromises = updatedRows.map((row) => {
@@ -10,9 +18,7 @@ export const saveUserChanges = (updatedRows) => {
 
       return fetch(url, {
         method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: headers
       })
         .then((response) => {
           if (!response.ok) {
@@ -69,25 +75,84 @@ export const saveUserChanges = (updatedRows) => {
     });
 };
 export const fetchData = (apiEndpoint, setRows) =>{
-  const [data, setData] = useState([]);
-  useEffect(() => {
-    const absoluteUrl = new URL(apiEndpoint, window.location.origin);
-    // Fetch user data from your API or backend server
-    const fetchData = fetch(absoluteUrl).then((response) => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then((data) => {
-      // Rename 'uid' to 'id'
-      const rowsWithIds = data.map((row) => ({ ...row, id: row.uid }));
-      setRows(rowsWithIds);
-      // console.log(rows, rowsWithIds);
-    })
-    .catch((error) => {
-      console.error('Error fetching user data:', error);
+    const [data, setData] = useState([]);
+    useEffect(() => {
+      const absoluteUrl = new URL(apiEndpoint, window.location.origin);
+      // Fetch user data from your API or backend server
+      const fetchData = fetch(absoluteUrl,{
+          method: 'GET',
+          headers: headers
+        }
+        ).then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        // Rename 'uid' to 'id'
+        const rowsWithIds = data.map((row) => ({ ...row, id: row.uid }));
+        setRows(rowsWithIds);
+        // console.log(rows, rowsWithIds);
+      })
+      .catch((error) => {
+        console.error('Error fetching user data:', error);
+      });
+      setData(fetchData);
+    }, [apiEndpoint, setRows]); 
+  }
+  export async function logoutUser(token) {
+    const csrfToken = getCSRFToken(); // Implement a function to retrieve the CSRF token
+  
+    const response = await fetch('/api/logout', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrfToken, // Include the CSRF token in the headers
+        // 'Authorization': `Token ${token}`,
+        credentials: 'include',
+      },
     });
-    setData(fetchData);
-  }, [apiEndpoint, setRows]); 
-}
+  
+    if (response.ok) {
+      const data = await response.json();
+      console.log('User logged out:', data);
+      return data;
+    } else {
+      const errorData = await response.json();
+      console.error('Logout failed:', errorData);
+      throw new Error('Logout failed');
+    }
+  }
+  
+  // Implement a function to retrieve the CSRF token
+  function getCSRFToken() {
+    const csrfCookie = document.cookie.match(/csrftoken=([\w-]+)/);
+    return csrfCookie ? csrfCookie[1] : '';
+  }
+  
+
+export const useFetchLoggedInUser = (setData) => {
+  useEffect(() => {
+    fetch('/api/sign-in', {
+      method: 'GET',
+      headers: headers,
+      credentials: 'include',
+    })
+      .then(response => {
+        if (response.ok) {
+          return response.json();
+        } else {
+          throw new Error(`Failed to fetch logged-in user: ${response.statusText}`);
+        }
+      })
+      .then(loggedInUser => {
+        console.log('Logged-in user:', loggedInUser);
+        setData(loggedInUser)
+      })
+      .catch(error => {
+        console.error('Failed to fetch logged-in user:', error.message);
+      });
+  }, [setData]);
+};
+

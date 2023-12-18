@@ -29,20 +29,18 @@ function SignInPage() {
   });
   const [showPassword, setShowPassword] = useState(false);
 
-  console.log("Error state:", error);
+  console.log("New Error state:", error);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-  
     const requestOptions = {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
         username: formData.username,
         password: formData.password,
       }),
     };
-  
     fetch("/api/sign-in", requestOptions)
       .then((response) => {
         if (!response.ok) {
@@ -60,7 +58,8 @@ function SignInPage() {
       })
       .then((data) => {
         // Assuming your server returns a user ID upon successful login
-        const userId = data.uid;
+        console.log('Data',data)
+        const userId = data.user.uid;
         if (userId != null) {
           // Redirect to the dashboard
           navigate(`/dashboard/${userId}`);
