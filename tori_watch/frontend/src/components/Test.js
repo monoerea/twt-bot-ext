@@ -111,7 +111,7 @@ export const Test = () => {
     </Box>
     </Card>
     <SectionWrapper highlightItems={highlightItems}/>
-    <Filter filters={filters} onFilterChange={handleFilterChange} />
+    {/* <Filter filters={filters} onFilterChange={handleFilterChange} /> */}
     <MappedCharts chartData={chartData} chartOptions={chartOptions} dropdownOptions={dropdownOptions} charts={charts} setCharts={setCharts} chartRefs={chartRefs} />
     
 </MainWrapper>

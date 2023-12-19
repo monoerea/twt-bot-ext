@@ -31,7 +31,7 @@ const MainWrapper = ({ children, drawer, drawerWidth, navbar, pages, settings, l
 
   return (
     <ThemeProvider theme={theme}>
-      <Box  component='main' overflowY='auto' height = '100vh' maxHeight='80vh' display="flex" flexDirection="column">
+      <Box  component='main' id='main2' height = '100vh' display="flex" flexDirection="column" style={{overflowY:'auto'}}>
         <CssBaseline />
 
         {navbar && <NavBar pageList={pages} settings={settings} logoImg={logoImg} login={login} avatar={avatar} />}
@@ -45,7 +45,9 @@ const MainWrapper = ({ children, drawer, drawerWidth, navbar, pages, settings, l
             handleDrawerOpen={handleDrawerOpen}
           />
         )}
-        <Box display="flex" flex="1 0 auto">
+        <Box display="flex" 
+        // flex="1 0 auto"
+        >
           {drawer && (
             <DrawerComponent theme={theme} open={open} drawerWidth={drawerWidth} items={items} handleDrawerClose={handleDrawerClose} />
           )}
