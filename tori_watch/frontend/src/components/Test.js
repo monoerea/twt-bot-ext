@@ -1,20 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useRef, createRef   } from "react";
 import { Box, Card, createTheme } from "@mui/material";
-import HighlightCard from "./HighlightCard";
 import MainWrapper from "./MainWrapper";
-import { SectionWrapper } from "./Section";
-import { drawerItems, settings, highlightItems, pages, items, chartData, chartOptions, dropdownOptions } from "./constants";
-import { Header } from "./Header";
-import { Add, ImportExport } from "@mui/icons-material";
 import Filter from "./Filter";
-import MiniDrawer from "./MiniDrawer";
-import { useFetchLoggedInUser, logoutUser } from "./api";
-import { MappedCharts } from "./MappedCharts";
+import { SectionWrapper } from "./Section";
+import { Header } from "./Header";
+import { drawerItems, settings, highlightItems, pages, items, chartData, chartOptions, dropdownOptions } from "./constants";
 
-const sectionItems = [
-  { icon: <ImportExport />, name: 'Export Chart', link: '/', onClick: {handleExport} },
-  { icon: <Add />, name: 'Add Chart', link: '/'}
-];
+
+
+import { Add, ImportExport } from "@mui/icons-material";
+
+
+import { useFetchLoggedInUser, logoutUser } from "./api";
+import { handleExport, handleAddChart } from "./utils";
+
+import { MappedCharts } from "./MappedCharts";
+import { Chart } from 'chart.js';
+import * as Chartjs from 'chart.js';
+import AddButton from "./AddButton";
+
+
+const controllers = Object.values(Chartjs).filter((chart) => chart.id !== undefined);
+
+Chart.register(...controllers);
+
 
 const cols = [
   { field: 'id', headerName: 'ID', width: 70 },
@@ -26,6 +35,7 @@ const cols = [
 
 
 export const Test = () => {
+  const chartsContainerRef = useRef(null);
   const [LoggedUser, setUser] = useState([])
   const [charts, setCharts] = useState([])
   useFetchLoggedInUser(setUser);
@@ -35,6 +45,25 @@ export const Test = () => {
     { label: 'Dashboard', onClick: () => console.log('Dashboard clicked'), link: '/dashboard/1' },
     { label: 'Logout', onClick: () => { console.log('Logout clicked'); logoutUser(LoggedUser.token); },
     link: '/' 
+    },
+  ];
+  const headerItems = [
+    { icon: <ImportExport />, name: 'Export Chart', link: '/', onClick: handleExport },
+    {
+      icon: <Add />,
+      name: 'Add Chart',
+      component: (
+        <AddButton
+          options={[
+            { label: 'Add Bar Chart', value: 'bar' },
+            { label: 'Add Line Chart', value: 'line' },
+            { label: 'Add Doughnut Chart', value: 'doughnut' },
+          ]}
+          onOptionClick={(option) => handleAddChart(option.value, dropdownOptions[2], setCharts)}
+          size="small"
+          style={{ height: '100%', minWidth: '120px' }}
+        />
+      ),
     },
   ];
   const [filters, setFilters] = useState(
@@ -52,12 +81,8 @@ export const Test = () => {
     setFilters(updatedFilters);
   };
 
-  const handleAddChart = (chartType, dropdownOptions) => {
-    // Logic to generate new chart data based on chartType and dropdownOptions
-    const newChartData = generateChartData(chartType, dropdownOptions);
-    console.log('Generated Chart Data:', newChartData);
-    setCharts((prevCharts) => [...prevCharts, newChartData]);
-  };
+  const chartRefs = useRef(Array.from({ length: charts.length }).map(() => createRef()));
+  
   const defaultTheme = createTheme();
   console.log(defaultTheme.palette, defaultTheme.palette.primary.main)
 
@@ -65,31 +90,31 @@ export const Test = () => {
     <MainWrapper theme={defaultTheme}
     drawerWidth={240}
     avatar={true} settings={settings}
-    title = {'Dashboards'}
+    title = {'Dashboard'}
     items={items}
     drawer={true}
     >
-      <Card sx={{ marginBottom: '20px', padding: '20px',borderRadius:'20px', background: `linear-gradient(90deg,
-                  ${defaultTheme.palette.secondary.main},
-                  ${defaultTheme.palette.primary.main}, 
-                  ${defaultTheme.palette.common.white})`,
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-          color: defaultTheme.palette.common.white}}>
-      <Box>
-        <Header
-          title={'Dashboard'}
-          items={sectionItems}
-          text={'Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum'}
-        >
-          <Filter filters={filters} onFilterChange={handleFilterChange} />
-        </Header> 
-      </Box>
-      </Card>
-      <SectionWrapper highlightItems={highlightItems}/>
-      <MappedCharts chartData={chartData} chartOptions={chartOptions} dropdownOptions={dropdownOptions} charts={charts} setCharts={setCharts} />
-      <Filter filters={filters} onFilterChange={handleFilterChange} />
-
-    </MainWrapper>
+    <Card sx={{  padding: '20px',borderRadius:'20px', background: `linear-gradient(90deg,
+                ${defaultTheme.palette.secondary.main},
+                ${defaultTheme.palette.primary.main}, 
+                ${defaultTheme.palette.common.white})`,
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+        color: defaultTheme.palette.common.white}}>
+    <Box>
+      <Header
+        title={'Dashboard'}
+        items={headerItems}
+        text={'Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum'}
+      >
+        <Filter filters={filters} onFilterChange={handleFilterChange} />
+      </Header> 
+    </Box>
+    </Card>
+    <SectionWrapper highlightItems={highlightItems}/>
+    <Filter filters={filters} onFilterChange={handleFilterChange} />
+    <MappedCharts chartData={chartData} chartOptions={chartOptions} dropdownOptions={dropdownOptions} charts={charts} setCharts={setCharts} chartRefs={chartRefs} />
+    
+</MainWrapper>
   );
 };
 

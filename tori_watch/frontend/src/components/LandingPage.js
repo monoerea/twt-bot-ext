@@ -7,7 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 export const LandingPage = () => {
   const navigate = useNavigate();
 
-  console.log('LandingPage 3333', pages)
+  console.log('LandingPage 333', pages)
   const [userInSession, setUserInSession] = useState(null);
 
   // Use the hook to fetch the logged-in user on component mount

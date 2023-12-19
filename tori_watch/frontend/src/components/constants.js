@@ -63,7 +63,7 @@ export const drawerItems = [
   { text: 'Item 3', icon: <Inbox />, link:'/' },
   { text: 'Item 4', icon: <Mail />,  link:'/' },
 ];
-const chartData = {
+export const chartData = {
   labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
   datasets: [
     {
@@ -78,7 +78,7 @@ const chartData = {
   ],
 };
 
-const chartOptions = {
+export const chartOptions = {
   scales: {
     x: {
       type: 'category',
@@ -90,7 +90,7 @@ const chartOptions = {
   },
 };
 
-const dropdownOptions = [
+export const dropdownOptions = [
   [
     { label: 'Option 1', value: 'option1' },
     { label: 'Option 2', value: 'option2' },

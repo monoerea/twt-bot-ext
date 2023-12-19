@@ -3,7 +3,16 @@ import { Card, CardContent, Typography, Button, Divider, Box } from '@mui/materi
 
 const HighlightCard = ({ title, content, buttonText, onClick, endIcon }) => {
   return (
-    <Card style={{ maxWidth: 600, borderRadius: '20px' }}>
+    <Card style={{ 
+      // flex: '1 1 300px',
+      margin: '10px',
+      borderRadius: '10px',
+      overflow: 'hidden',
+      minWidth: '200px', // Set a minimum width for each card
+      maxWidth: '200px',
+      maxWidth: 600,
+      borderRadius: '20px'
+      }}>
       <CardContent style={{paddingBottom: '5px'}}>
         <Box p={{ xs: 2, sm: 3, md: 4 }} display={'flex'} flex={'row'}>
           <Box>

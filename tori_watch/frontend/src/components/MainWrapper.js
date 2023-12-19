@@ -17,10 +17,10 @@ Chart.register(...controllers);
 
 
 
-const MainWrapper = ({children, drawer, drawerWidth, navbar, pages, settings, login, avatar, items, title, logoImg}) => {
+const MainWrapper = ({ children, drawer, drawerWidth, navbar, pages, settings, login, avatar, items, title, logoImg }) => {
   const [open, setOpen] = useState(false);
   const theme = useTheme();
-  const [anchorElUser, setAnchorElUser] = React.useState(null);
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -28,37 +28,61 @@ const MainWrapper = ({children, drawer, drawerWidth, navbar, pages, settings, lo
   const handleDrawerClose = () => {
     setOpen(false);
   };
-  console.log('MainWrapper', pages)
 
   return (
     <ThemeProvider theme={theme}>
-      <Box>
+      <Box  component='main' overflowY='auto' height = '100vh' maxHeight='80vh' display="flex" flexDirection="column">
         <CssBaseline />
-        
-        {navbar && <NavBar pageList={pages} settings={settings} logoImg={logoImg} login={login} avatar={avatar}/>}
-        {title && <AppBarComponent open={open} drawerWidth={drawerWidth} title={title} avatar={avatar} settings={settings} handleDrawerOpen={handleDrawerOpen}/>}
-          <Box display={'flex'} flex={'0 0 auto'}>
-              {/* {items && <MiniDrawer itemList={items} title={title} avatar={avatar} settings={settings}/>} */}
-              {drawer && <DrawerComponent theme={theme} open={open} drawerWidth={drawerWidth} items={items} handleDrawerClose={handleDrawerClose}/>}
-              <Box
-              component={'main'}
-              mt={items ? 7:0}
-              flex={1}
-              display="flex"
-              flexDirection="column"
-              p = {4}
-              justifyContent="space-between"
-              position="sticky"
-              top="0"
-              overflowY="auto"
-            >
-              <ErrorBoundary>
-                {children}
-              </ErrorBoundary>
-            </Box>
+
+        {navbar && <NavBar pageList={pages} settings={settings} logoImg={logoImg} login={login} avatar={avatar} />}
+        {title && (
+          <AppBarComponent
+            open={open}
+            drawerWidth={drawerWidth}
+            title={title}
+            avatar={avatar}
+            settings={settings}
+            handleDrawerOpen={handleDrawerOpen}
+          />
+        )}
+        <Box display="flex" flex="1 0 auto">
+          {drawer && (
+            <DrawerComponent theme={theme} open={open} drawerWidth={drawerWidth} items={items} handleDrawerClose={handleDrawerClose} />
+          )}
+          <Box
+            component="main"
+            mt={items ? 7 : 0}
+            flex="1"
+            display="flex"
+            flexDirection="column"
+            p={4}
+            justifyContent="space-between"
+            // position="sticky"
+            top="0"
+            overflowY="auto"
+          >
+          <style>
+          {`
+          ::-webkit-scrollbar {
+            width: 8px;
+            border-radius: 4px;
+          }
+
+          ::-webkit-scrollbar-thumb {
+            background-color: #7f8c8d;
+            border-radius: 4px;
+          }
+
+          ::-webkit-scrollbar-track {
+            background-color: #f1f1f1;
+            border-radius: 4px;
+          }
+        `}
+        </style>
+            <ErrorBoundary>{children}</ErrorBoundary>
           </Box>
+        </Box>
       </Box>
-       
     </ThemeProvider>
   );
 };
