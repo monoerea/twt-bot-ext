@@ -18,7 +18,11 @@ export const Header = ({ children, title, items, text }) => {
             </Box>
             <Box display={'flex'} flexDirection={'row'} padding={'20px'}justifyContent ={'space-evenly'}>
                 {itemList.map((item) => (
-                <Button variant={'contained'} key={item.name} textAlign ={'center'} component={Link} to={item.link} style={{ margin: '0 8px'}} startIcon={item.icon}>
+                <Button variant={'contained'} key={item.name} textAlign ={'center'} 
+                component={item.link? Link: item.component} 
+                to={item.link ? item.link: undefined} 
+                onClick={item.onClick}
+                style={{ margin: '0 8px'}} startIcon={item.icon} >
                     {item.name}
                 </Button>
                 ))}

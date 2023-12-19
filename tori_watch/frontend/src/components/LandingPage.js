@@ -1,17 +1,12 @@
 import React, { useEffect, useState } from "react";
 import MainWrapper from "./MainWrapper";
 import { SectionWrapper } from "./Section";
-import { pages, settings } from "./constants";
+import { pages, settings, highlightItems } from "./constants";
 import { useFetchLoggedInUser } from "./api";
 import { Link, useNavigate } from "react-router-dom";
 export const LandingPage = () => {
   const navigate = useNavigate();
 
-  const highlightItems = [
-    { title: 'User', content: 'Lorem ipsum Lorem ipsumLorem ipsum Lorem ipsum', buttonText: 'Say Hi' },
-    { title: 'User', content: 'Lorem ipsum Lorem ipsumLorem ipsum Lorem ipsum', buttonText: 'Say Hi' },
-    { title: 'User', content: 'Lorem ipsum Lorem ipsumLorem ipsum Lorem ipsum', buttonText: 'Say Hi' },
-  ];
   console.log('LandingPage 3333', pages)
   const [userInSession, setUserInSession] = useState(null);
 

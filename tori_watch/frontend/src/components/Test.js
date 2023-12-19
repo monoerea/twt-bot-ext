@@ -3,16 +3,17 @@ import { Box, Card, createTheme } from "@mui/material";
 import HighlightCard from "./HighlightCard";
 import MainWrapper from "./MainWrapper";
 import { SectionWrapper } from "./Section";
-import { drawerItems, settings, highlightItems, pages, items } from "./constants";
+import { drawerItems, settings, highlightItems, pages, items, chartData, chartOptions, dropdownOptions } from "./constants";
 import { Header } from "./Header";
 import { Add, ImportExport } from "@mui/icons-material";
 import Filter from "./Filter";
 import MiniDrawer from "./MiniDrawer";
 import { useFetchLoggedInUser, logoutUser } from "./api";
+import { MappedCharts } from "./MappedCharts";
 
 const sectionItems = [
-  { icon: <ImportExport />, name: 'Export Chart', link: '/' },
-  { icon: <Add />, name: 'Add Chart', link: '/' }
+  { icon: <ImportExport />, name: 'Export Chart', link: '/', onClick: {handleExport} },
+  { icon: <Add />, name: 'Add Chart', link: '/'}
 ];
 
 const cols = [
@@ -26,7 +27,7 @@ const cols = [
 
 export const Test = () => {
   const [LoggedUser, setUser] = useState([])
-
+  const [charts, setCharts] = useState([])
   useFetchLoggedInUser(setUser);
   const settings = [
     { label: 'Profile', onClick: () => console.log('Profile clicked') },
@@ -49,6 +50,13 @@ export const Test = () => {
       filter.id === changedFilter.id ? { ...filter, enabled: !filter.enabled } : filter
     );
     setFilters(updatedFilters);
+  };
+
+  const handleAddChart = (chartType, dropdownOptions) => {
+    // Logic to generate new chart data based on chartType and dropdownOptions
+    const newChartData = generateChartData(chartType, dropdownOptions);
+    console.log('Generated Chart Data:', newChartData);
+    setCharts((prevCharts) => [...prevCharts, newChartData]);
   };
   const defaultTheme = createTheme();
   console.log(defaultTheme.palette, defaultTheme.palette.primary.main)
@@ -78,7 +86,9 @@ export const Test = () => {
       </Box>
       </Card>
       <SectionWrapper highlightItems={highlightItems}/>
-      <Filter filters={filters} onFilterChange={handleFilterChange} /> 
+      <MappedCharts chartData={chartData} chartOptions={chartOptions} dropdownOptions={dropdownOptions} charts={charts} setCharts={setCharts} />
+      <Filter filters={filters} onFilterChange={handleFilterChange} />
+
     </MainWrapper>
   );
 };
