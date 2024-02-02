@@ -1,4 +1,4 @@
-import React, { useState, useRef, createRef   } from "react";
+import React, { useState, useRef, createRef, useEffect   } from "react";
 import { Box, Card, createTheme } from "@mui/material";
 import MainWrapper from "./MainWrapper";
 import Filter from "./Filter";
@@ -35,9 +35,21 @@ const cols = [
 
 
 export const Test = () => {
-  const chartsContainerRef = useRef(null);
-  const [LoggedUser, setUser] = useState([])
   const [charts, setCharts] = useState([])
+  const chartsContainerRef = useRef(null)
+  const chartRefs = useRef([]);
+
+  useEffect(() => {
+    // Ensure that chartRefs.current has the same length as charts
+    chartRefs.current = Array(charts.length).fill(null).map((_, i) => chartRefs.current[i] || React.createRef());
+    console.log('chartrefs:', chartRefs.current);
+  }, [charts]);
+
+  // useEffect(() => {
+  //   // Update chartsContainerRef once the component mounts
+  //   setChartsContainerRef(document.querySelector('.export-items'));
+  // }, []);
+  const [LoggedUser, setUser] = useState([])
   useFetchLoggedInUser(setUser);
   const settings = [
     { label: 'Profile', onClick: () => console.log('Profile clicked') },
@@ -48,7 +60,7 @@ export const Test = () => {
     },
   ];
   const headerItems = [
-    { icon: <ImportExport />, name: 'Export Chart', link: '/', onClick: handleExport },
+    { icon: <ImportExport />, name: 'Export Chart', onClick: () => handleExport("A4", chartsContainerRef) },
     {
       icon: <Add />,
       name: 'Add Chart',
@@ -80,8 +92,6 @@ export const Test = () => {
     );
     setFilters(updatedFilters);
   };
-
-  const chartRefs = useRef(Array.from({ length: charts.length }).map(() => createRef()));
   
   const defaultTheme = createTheme();
   console.log(defaultTheme.palette, defaultTheme.palette.primary.main)
@@ -110,10 +120,12 @@ export const Test = () => {
       </Header> 
     </Box>
     </Card>
-    <SectionWrapper highlightItems={highlightItems}/>
-    {/* <Filter filters={filters} onFilterChange={handleFilterChange} /> */}
-    <MappedCharts chartData={chartData} chartOptions={chartOptions} dropdownOptions={dropdownOptions} charts={charts} setCharts={setCharts} chartRefs={chartRefs} />
-    
+    <Box className = "export-items"  ref={chartsContainerRef}>
+        <SectionWrapper highlightItems={highlightItems}/>
+        {/* <Filter filters={filters} onFilterChange={handleFilterChange} /> */}
+        <MappedCharts chartData={chartData} chartOptions={chartOptions} dropdownOptions={dropdownOptions} charts={charts} setCharts={setCharts} chartRefs={chartRefs} />
+    </Box>
+
 </MainWrapper>
   );
 };

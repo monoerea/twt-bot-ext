@@ -1,13 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import ChartCard from "./ChartCard";
 
-export const MappedCharts = ({ chartData, chartOptions, dropdownOptions, charts, setCharts }) => {
-  const chartRefs = useRef([]);
-
-  useEffect(() => {
-    // Ensure that chartRefs.current has the same length as charts
-    chartRefs.current = Array(charts.length).fill(null).map((_, i) => chartRefs.current[i] || React.createRef());
-  }, [charts]);
+export const MappedCharts = ({ chartData, chartOptions, dropdownOptions, charts, setCharts, chartRefs}) => {
 
   const handleDelete = (index) => {
     const updatedCharts = [...charts];
@@ -21,7 +15,6 @@ export const MappedCharts = ({ chartData, chartOptions, dropdownOptions, charts,
 
   return (
     <div
-      id="charts-container"
       style={{
         display: 'flex',  // Add display property
         flexDirection: 'row',

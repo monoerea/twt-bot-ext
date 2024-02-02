@@ -16,7 +16,7 @@ import { Doughnut, Bar, Line, Radar } from 'react-chartjs-2';
 
 // ... (previous imports remain the same)
 
-const ChartCard = ({ chartType, chartData, chartOptions, dropdownCount, chartRef, onDelete, onModify }) => {
+const ChartCard = ({classname ,chartType, chartData, chartOptions, dropdownCount, chartRef, onDelete, onModify }) => {
   const theme = useTheme();
   const [isLoading, setIsLoading] = useState(true);
   const [dropdownOptions, setDropdownOptions] = useState(Array.from({ length: dropdownCount }, () => []));
@@ -24,6 +24,9 @@ const ChartCard = ({ chartType, chartData, chartOptions, dropdownCount, chartRef
   const [anchorEl, setAnchorEl] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  // useEffect(() => {
+  //   console.log('chartRef:', chartRef.current);
+  // }, [chartRef]);
 
   const handleOptionsChange = (event, index) => {
     const updatedChartOptionsArray = [...chartOptionsArray];
@@ -71,13 +74,13 @@ const ChartCard = ({ chartType, chartData, chartOptions, dropdownCount, chartRef
   const renderChart = () => {
     switch (chartType) {
       case 'doughnut':
-        return <Doughnut ref={chartRef} data={chartData} options={chartOptions} />;
+        return <Doughnut  className= {classname} ref={chartRef} data={chartData} options={chartOptions} />;
       case 'bar':
-        return <Bar ref={chartRef} data={chartData} options={chartOptions} />;
+        return <Bar className= {classname} ref={chartRef} data={chartData} options={chartOptions} />;
       case 'line':
-        return <Line ref={chartRef} data={chartData} options={chartOptions} />;
+        return <Line className= {classname} ref={chartRef} data={chartData} options={chartOptions} />;
       case 'radar':
-        return <Radar ref={chartRef} data={chartData} options={chartOptions} />;
+        return <Radar className= {classname} ref={chartRef} data={chartData} options={chartOptions} />;
       default:
         return null;
     }
